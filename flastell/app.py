@@ -2,6 +2,7 @@ from flask import Flask,render_template,redirect,request,url_for
 import database as db
 from flask_login import LoginManager, UserMixin, login_required,current_user,login_user,logout_user
 import sqlite3 
+import bcrypt
 
 dbPath = "db.sqlite3"
 conn = sqlite3.connect(dbPath)
@@ -43,12 +44,16 @@ def login():
 			password = request.form["password"]
 			conn = sqlite3.connect(dbPath)
 			c = conn.cursor()
-			c.execute("SELECT * FROM User WHERE username=? and password=?",[username,password])
+			c.execute("SELECT * FROM User WHERE username=?",[username])
 			user = c.fetchone()
 			conn.close()
 			if user:
-				login_user(load_user(user[0]))
-				return redirect("/index")
+				access = bcrypt.checkpw(password.encode("utf8"),user[2])
+				if access:
+					login_user(load_user(user[0]))
+					return redirect("/index")
+				else:
+					return render_template("auth/login.html",invalid=True)
 			return redirect("/login")
 	else:
 		return redirect("/index")
@@ -58,6 +63,31 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("login"))
+
+@app.route("/register",methods=["GET","POST"])
+def register():
+	if request.method == "GET":
+		return render_template("auth/register.html")
+	elif request.method == "POST":
+		username = request.form["username"]
+		password = request.form["password"]
+		password_repeat = request.form["password_repeat"]
+		if password != password_repeat:
+			return render_template("auth/register.html",password_correct=False)
+		else:
+			hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+			conn = sqlite3.connect(dbPath)
+			c = conn.cursor()
+			c.execute("INSERT INTO User(username,password) VALUES(?,?)",[username,hashed])
+			c.execute("SELECT * FROM User WHERE username=? and password=?",[username,hashed])
+			user = c.fetchone()
+			conn.commit()
+			conn.close()
+			if user:
+				login_user(load_user(user[0]))
+				return redirect("/index")
+			else:
+				return render_template("auth/register.html",error=True)
 
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
