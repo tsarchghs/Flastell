@@ -1,6 +1,6 @@
 from flask import Flask,render_template,redirect,request,url_for
 import database as db
-import flask_login
+from flask_login import LoginManager, UserMixin, login_required,current_user,login_user,logout_user
 import sqlite3 
 
 dbPath = "db.sqlite3"
@@ -13,10 +13,10 @@ conn.close()
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-login_manager = flask_login.LoginManager()
+login_manager = LoginManager()
 login_manager.init_app(app)
 
-class User(flask_login.UserMixin):
+class User(UserMixin):
 	def __init__(self,ID,username,password):
 		self.id = ID
 		self.username = username
@@ -35,7 +35,7 @@ def load_user(id):
 
 @app.route("/login",methods=["GET","POST"])
 def login():
-	if not flask_login.current_user.is_authenticated:
+	if not current_user.is_authenticated:
 		if request.method == "GET":
 			return render_template("auth/login.html")
 		elif request.method == "POST":
@@ -47,12 +47,17 @@ def login():
 			user = c.fetchone()
 			conn.close()
 			if user:
-				flask_login.login_user(load_user(user[0]))
+				login_user(load_user(user[0]))
 				return redirect("/index")
 			return redirect("/login")
 	else:
 		return redirect("/index")
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
