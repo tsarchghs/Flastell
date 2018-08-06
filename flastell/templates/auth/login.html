@@ -1,5 +1,7 @@
 <form method="POST">
-
+	{% if invalid %}
+		<p>Username or Password is invalid</p>
+	{% endif %}
 	Username: <input name="username">
 	<br>
 	Password: <input name="password">
