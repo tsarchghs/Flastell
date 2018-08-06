@@ -20,3 +20,11 @@ def getUserSchema():
 			   username TEXT UNIQUE,
 			   password TEXT"""
 
+def getEmailSchema():
+	return """
+		id INTEGER PRIMARY KEY,
+		sender_id INTEGER,
+		receiver_id INTEGER,
+		title TEXT,
+		description TEXT
+						"""
