@@ -1,0 +1,15 @@
+<form method="POST">
+	{% if password_correct %}
+		<p>Password are not the same</p>
+	{% endif %}
+	{% if error %}
+		<p>Something went wrong!</p>
+	{% endif %}
+	Username: <input name="username">
+	<br>
+	Password: <input name="password">
+	<br>
+	Repeat password: <input name="password_repeat">
+	<button type="submit">Register</button>
+
+</form>
