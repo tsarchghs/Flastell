@@ -52,9 +52,7 @@ def login():
 				if access:
 					login_user(load_user(user[0]))
 					return redirect("/index")
-				else:
-					return render_template("auth/login.html",invalid=True)
-			return redirect("/login")
+			return render_template("auth/login.html",invalid=True)
 	else:
 		return redirect("/index")
 
