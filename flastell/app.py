@@ -36,6 +36,10 @@ def load_user(id):
 	if user:
 		return User(user[0],user[1],user[2])
 
+@app.route("/")
+def redirectToIndex():
+	return redirect(url_for("index"))
+
 @app.route("/login",methods=["GET","POST"])
 def login():
 	if not current_user.is_authenticated:
