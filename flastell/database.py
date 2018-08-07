@@ -17,7 +17,7 @@ class Database():
 
 def getUserSchema():
 	return """id INTEGER PRIMARY KEY,
-			   username TEXT UNIQUE,
+			   email TEXT UNIQUE,
 			   password TEXT"""
 
 def getEmailSchema():
