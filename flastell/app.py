@@ -8,6 +8,7 @@ dbPath = "db.sqlite3"
 conn = sqlite3.connect(dbPath)
 c = conn.cursor()
 c.execute("CREATE TABLE IF NOT EXISTS User({});".format(db.getUserSchema()))
+c.execute("CREATE TABLE IF NOT EXISTS Email({});".format(db.getEmailSchema()))
 conn.commit()
 conn.close()
 
@@ -86,6 +87,26 @@ def register():
 				return redirect("/index")
 			else:
 				return render_template("auth/register.html",error=True)
+
+@app.route("/index")
+@login_required
+def index():
+	conn = sqlite3.connect(dbPath)
+	c = conn.cursor()
+	c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=? ",[current_user.id,current_user.id])
+	user_emails = c.fetchall()
+	emails = {}
+	for email in user_emails:
+		print("email")
+		print(user_emails)
+		c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
+					 AND (receiver_id=? or receiver_id=?)""",[email[1],email[2],email[1],email[2]])
+		emailsList = c.fetchall()
+		print(emailsList)
+		lastEmail = emailsList[-1]
+		emails[lastEmail[0],lastEmail[1],lastEmail[2]] = lastEmail[3]
+	return render_template("index.html",emails=emails)
+
 
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
