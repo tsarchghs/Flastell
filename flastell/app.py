@@ -127,7 +127,7 @@ def showEmails(receiver_id):
 		sender = load_user(email[1])
 		sender_email[sender] = email
 	receiver = load_user(int(receiver_id))
-	return render_template("showEmails.html",emails=sender_email,receiver=receiver)
+	return render_template("emails/showEmails.html",emails=sender_email,receiver=receiver)
 
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
