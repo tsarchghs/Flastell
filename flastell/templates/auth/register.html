@@ -1,15 +1,31 @@
-<form method="POST">
-	{% if password_correct %}
-		<p>Password are not the same</p>
-	{% endif %}
-	{% if error %}
-		<p>Something went wrong!</p>
-	{% endif %}
-	Username: <input name="username">
-	<br>
-	Password: <input name="password">
-	<br>
-	Repeat password: <input name="password_repeat">
-	<button type="submit">Register</button>
-
-</form>
+{% extends 'base.html' %}
+{% block head %}
+    <link href="signin.css" rel="stylesheet">
+{% endblock head %}
+{% block body %}
+  <body class="text-center">
+    <form class="form-signin" method="POST">
+		{% if password_correct %}
+			<p>Password are not the same</p>
+		{% endif %}
+		{% if error %}
+			<p>Something went wrong!</p>
+		{% endif %}
+      <img class="mb-4" src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+      <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+      <label for="inputEmail" class="sr-only">Email address</label>
+      <input name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+      <label for="inputPassword" class="sr-only">Repeat password</label>
+      <input name="password_repeat" type="password" id="inputPassword" class="form-control" placeholder="Repeat Password" required>
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+      <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+    </form>
+  </body>
+{% endblock body %}
