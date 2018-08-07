@@ -3,6 +3,7 @@ import database as db
 from flask_login import LoginManager, UserMixin, login_required,current_user,login_user,logout_user
 import sqlite3 
 import bcrypt
+from collections import OrderedDict
 
 dbPath = "db.sqlite3"
 conn = sqlite3.connect(dbPath)
@@ -93,16 +94,16 @@ def register():
 def index():
 	conn = sqlite3.connect(dbPath)
 	c = conn.cursor()
-	c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=? ORDER BY id",[current_user.id,current_user.id])
+	c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=?",[current_user.id,current_user.id])
 	user_emails = c.fetchall()
-	emails = {}
+	emails = OrderedDict()
 	for email in user_emails:
 		c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
-					 AND (receiver_id=? or receiver_id=?) ORDER BY id""",[email[1],email[2],email[1],email[2]])
+					 AND (receiver_id=? or receiver_id=?)""",[email[1],email[2],email[1],email[2]])
 		emailsList = c.fetchall()
 		lastEmail = emailsList[-1]
 		emails[lastEmail[0],lastEmail[1],lastEmail[2]] = lastEmail[3]
-	user_email = {}
+	user_email = OrderedDict()
 	for email,title in emails.items():
 		print(email)
 		id_ = email[0]
@@ -118,10 +119,10 @@ def showEmails(receiver_id):
 	conn = sqlite3.connect(dbPath)
 	c = conn.cursor()
 	c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
-				AND (receiver_id=? or receiver_id=?) ORDER BY id""",[current_user.id,receiver_id,receiver_id,current_user.id])
+				AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])
 	emails = c.fetchall()
 	conn.close()
-	sender_email = {}
+	sender_email = OrderedDict()
 	for email in emails:
 		sender = load_user(email[1])
 		sender_email[sender] = email
