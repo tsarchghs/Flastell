@@ -93,19 +93,23 @@ def register():
 def index():
 	conn = sqlite3.connect(dbPath)
 	c = conn.cursor()
-	c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=? ",[current_user.id,current_user.id])
+	c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=? ORDER BY id",[current_user.id,current_user.id])
 	user_emails = c.fetchall()
 	emails = {}
 	for email in user_emails:
-		print("email")
-		print(user_emails)
 		c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
-					 AND (receiver_id=? or receiver_id=?)""",[email[1],email[2],email[1],email[2]])
+					 AND (receiver_id=? or receiver_id=?) ORDER BY id""",[email[1],email[2],email[1],email[2]])
 		emailsList = c.fetchall()
-		print(emailsList)
 		lastEmail = emailsList[-1]
 		emails[lastEmail[0],lastEmail[1],lastEmail[2]] = lastEmail[3]
-	return render_template("index.html",emails=emails)
+	user_email = {}
+	for email,title in emails.items():
+		print(email)
+		id_ = email[0]
+		sender = load_user(email[1])
+		receiver = load_user(email[2])
+		user_email[id_,sender,receiver] = title
+	return render_template("index.html",emails=user_email)
 
 
 if __name__ == "__main__":
