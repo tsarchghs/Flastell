@@ -109,8 +109,24 @@ def index():
 		sender = load_user(email[1])
 		receiver = load_user(email[2])
 		user_email[id_,sender,receiver] = title
+	conn.close()
 	return render_template("index.html",emails=user_email)
 
+@app.route("/showEmails/<int:receiver_id>")
+@login_required
+def showEmails(receiver_id):
+	conn = sqlite3.connect(dbPath)
+	c = conn.cursor()
+	c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
+				AND (receiver_id=? or receiver_id=?) ORDER BY id""",[current_user.id,receiver_id,receiver_id,current_user.id])
+	emails = c.fetchall()
+	conn.close()
+	sender_email = {}
+	for email in emails:
+		sender = load_user(email[1])
+		sender_email[sender] = email
+	receiver = load_user(int(receiver_id))
+	return render_template("showEmails.html",emails=sender_email,receiver=receiver)
 
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
