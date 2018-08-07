@@ -1,0 +1,7 @@
+Emails between {{current_user.username}} and {{receiver.username}}:
+<ul>
+{% for key,value in emails.items() %}
+	<li>{{key.username}}, - {{value.3}} <br>
+			-{{value.4}}</li>
+{% endfor %}
+</ul>
