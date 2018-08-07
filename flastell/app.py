@@ -20,9 +20,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 class User(UserMixin):
-	def __init__(self,ID,username,password):
+	def __init__(self,ID,email,password):
 		self.id = ID
-		self.username = username
+		self.email = email
 		self.password = password
 
 @login_manager.user_loader
@@ -42,11 +42,11 @@ def login():
 		if request.method == "GET":
 			return render_template("auth/login.html")
 		elif request.method == "POST":
-			username = request.form["username"]
+			email = request.form["email"]
 			password = request.form["password"]
 			conn = sqlite3.connect(dbPath)
 			c = conn.cursor()
-			c.execute("SELECT * FROM User WHERE username=?",[username])
+			c.execute("SELECT * FROM User WHERE email=?",[email])
 			user = c.fetchone()
 			conn.close()
 			if user:
@@ -69,7 +69,7 @@ def register():
 	if request.method == "GET":
 		return render_template("auth/register.html")
 	elif request.method == "POST":
-		username = request.form["username"]
+		email = request.form["email"]
 		password = request.form["password"]
 		password_repeat = request.form["password_repeat"]
 		if password != password_repeat:
@@ -78,8 +78,8 @@ def register():
 			hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 			conn = sqlite3.connect(dbPath)
 			c = conn.cursor()
-			c.execute("INSERT INTO User(username,password) VALUES(?,?)",[username,hashed])
-			c.execute("SELECT * FROM User WHERE username=? and password=?",[username,hashed])
+			c.execute("INSERT INTO User(email,password) VALUES(?,?)",[email,hashed])
+			c.execute("SELECT * FROM User WHERE email=? and password=?",[email,hashed])
 			user = c.fetchone()
 			conn.commit()
 			conn.close()
