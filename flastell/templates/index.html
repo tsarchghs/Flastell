@@ -1,10 +1,13 @@
+{% extends 'base.html' %}
+{% block body %}
 Emails:
 <ul>
 {% for key,value in emails.items() %}
 	{% if key.1 == current_user %}
-		<a href="{{ url_for('showEmails',receiver_id=key.2.id) }}"><li>{{key.1.username}} , {{key.2.username}} - {{value}}</li></a>
+		<a href="{{ url_for('showEmails',receiver_id=key.2.id) }}"><li>{{key.1.email}} , {{key.2.email}} - {{value}}</li></a>
 	{% else %}
-		<a href="{{ url_for('showEmails',receiver_id=key.1.id) }}"><li>{{key.1.username}} , {{key.2.username}} - {{value}}</li></a>
+		<a href="{{ url_for('showEmails',receiver_id=key.1.id) }}"><li>{{key.1.email}} , {{key.2.email}} - {{value}}</li></a>
 	{% endif %}
 {% endfor %}
 </ul>
+{% endblock body %}
