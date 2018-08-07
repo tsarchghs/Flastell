@@ -36,6 +36,10 @@ def load_user(id):
 	if user:
 		return User(user[0],user[1],user[2])
 
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return redirect('/login')
+
 @app.route("/")
 def redirectToIndex():
 	return redirect(url_for("index"))
