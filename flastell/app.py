@@ -137,5 +137,32 @@ def showEmails(receiver_id):
 	receiver = load_user(int(receiver_id))
 	return render_template("emails/showEmails.html",emails=sender_email,receiver=receiver)
 
+@app.route("/compose/<string:type_>",methods=["GET","POST"])
+@login_required
+def compose(type_):
+	if request.method == "GET" and type_ == "new":
+		return render_template("emails/compose.html")
+	elif request.method == "POST":
+		conn = sqlite3.connect(dbPath)
+		c = conn.cursor()
+		receiver_email = request.form["receiver_email"]
+		c.execute("SELECT id FROM User WHERE email=?",[receiver_email])
+		try:
+			receiver_id = c.fetchone()[0]
+		except TypeError:
+			if type_ == "new":
+				return render_template("emails/compose.html",invalid_email=True)
+			elif type_ == "email":
+				return render_template("emails/showEmails.html",invalid_email=True)
+		print(receiver_email)
+		title = request.form["title"]
+		description = request.form["description"]
+		c.execute("""INSERT INTO Email(sender_id,receiver_id,title,description)
+							VALUES(?,?,?,?)""",(str(current_user.id),str(receiver_id),
+												title,description,))
+		conn.commit()
+		conn.close()
+		return redirect(url_for("showEmails",receiver_id=receiver_id))
+
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
