@@ -9,5 +9,6 @@ Emails:
 		<a href="{{ url_for('showEmails',receiver_id=key.1.id) }}"><li>{{key.1.email}} , {{key.2.email}} - {{value}}</li></a>
 	{% endif %}
 {% endfor %}
+<a href="#">Compose</a>
 </ul>
 {% endblock body %}
