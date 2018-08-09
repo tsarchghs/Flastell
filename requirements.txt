@@ -1,10 +1,13 @@
-Collecting freeze
-  Downloading https://files.pythonhosted.org/packages/c2/16/ca9fcd75d8c958b2260d521f18d7e697de5d2133fc68fc968feef4a348b6/freeze-1.0.10.tar.gz
-Collecting six (from freeze)
-  Using cached https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl
-Building wheels for collected packages: freeze
-  Running setup.py bdist_wheel for freeze
-  Stored in directory: /home/gjergj/.cache/pip/wheels/5a/01/6b/b8d944e726b251e0f68a8786a3d26193c16f2883ae6f19c71a
-Successfully built freeze
-Installing collected packages: six, freeze
-Successfully installed freeze-1.0.10 six-1.11.0
+bcrypt==3.1.4
+cffi==1.11.5
+click==6.7
+Flask==1.0.2
+Flask-Login==0.4.1
+freeze==1.0.10
+itsdangerous==0.24
+Jinja2==2.10
+MarkupSafe==1.0
+pycparser==2.18
+six==1.11.0
+Werkzeug==0.14.1
+wheel==0.24.0
