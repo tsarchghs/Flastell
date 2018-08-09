@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block body %}
+<form method="POST">
+	{% if invalid_email %}
+		User with that email already exist
+		<br>
+	{% endif %}
+	{% if success %}
+		Successfully changed email
+		<br>
+	{% endif %}
+	Email: <input type="email" name="email" value="{{current_user.email}}"> <br>
+	Password: ****** 	<a href="#">Change password</a>
+	<button type="submit">Change email</button>
+</form>
+{% endblock body %}
