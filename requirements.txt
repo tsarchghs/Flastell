@@ -1,3 +1,5 @@
+atomicwrites==1.1.5
+attrs==18.1.0
 bcrypt==3.1.4
 cffi==1.11.5
 click==6.7
@@ -7,7 +9,12 @@ freeze==1.0.10
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
+more-itertools==4.3.0
+pathlib2==2.3.2
+pluggy==0.7.1
+py==1.5.4
 pycparser==2.18
+pytest==3.7.1
 six==1.11.0
 Werkzeug==0.14.1
 wheel==0.24.0
