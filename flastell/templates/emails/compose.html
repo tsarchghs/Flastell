@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block body %}
+<form method="POST">
+	{% if invalid_email %}
+		User with that email doesn't exist
+		<br>
+	{% endif %}
+	Send to: <input name="receiver_email" placeholder="Email.."> <br>
+	Title: <input name="title" placeholder="Title..."> <br>
+	Description: <textarea name="description" placeholder="Description..."></textarea>
+	<button type="submit">Compose</button>
+</form>
+{% endblock body %}
