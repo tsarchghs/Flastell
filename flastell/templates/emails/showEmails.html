@@ -5,6 +5,19 @@ Emails between {{current_user.email}} and {{receiver.email}}:
 	{% for key,value in emails.items() %}
 		<li>{{key.email}}, - {{value.3}} <br>
 				-{{value.4}}</li>
+	{% else %}
+		<li>Nothing to show</li>
 	{% endfor %}
 	</ul>
+	Send an email to {{receiver.email}} :
+	<form method="POST" action="{{ url_for('compose',type_='email')}}">
+		{% if invalid_email %}
+			User with that email doesn't exist
+			<br>
+		{% endif %}
+		<input type="hidden" value="{{receiver.email}}" name="receiver_email">
+		Title: <input name="title" placeholder="Title..."> <br>
+		Description: <textarea name="description" placeholder="Description..."></textarea>
+		<button type="submit">Compose</button>
+	</form>
 {% endblock body %}
