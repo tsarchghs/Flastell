@@ -164,5 +164,19 @@ def compose(type_):
 		conn.close()
 		return redirect(url_for("showEmails",receiver_id=receiver_id))
 
+@app.route("/account/edit",methods=["GET","POST"])
+@login_required
+def editAccount():
+	if request.method == "GET":
+		return render_template("accounts/editAccount.html")
+	elif request.method == "POST":
+		email = request.form["email"]
+		conn = sqlite3.connect(dbPath)
+		c = conn.cursor()
+		c.execute("UPDATE User SET email=? WHERE email=?",(email,current_user.email,))
+		conn.commit()
+		conn.close()
+		return render_template("accounts/editAccount.html",success=True)
+
 if __name__ == "__main__":
 	app.run(debug=True,port=8000)
