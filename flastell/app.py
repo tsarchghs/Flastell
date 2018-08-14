@@ -2,18 +2,13 @@ from flask import Flask,render_template,redirect,request,url_for
 from flask_login import LoginManager, UserMixin, login_required,current_user,login_user,logout_user
 from collections import OrderedDict
 from models import db
-from models import User,Email
 import os
 import sqlite3 
 import bcrypt
 from sqlalchemy.orm import exc
-from werkzeug.exceptions import abort
+from models import User, Email
 
-def get_object_or_404(model, *criterion):
-    try:
-        return model.query.filter(*criterion).one()
-    except exc.NoResultFound, exc.MultipleResultsFound:
-        abort(404)
+dbPath = "db.sqlite3"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////{}/db.sqlite3'.format(str(os.getcwd()))
@@ -24,17 +19,18 @@ with app.app_context():
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-class User(UserMixin):
+class UserObject(UserMixin):
 	def __init__(self,ID,email,password):
 		self.id = ID
 		self.email = email
 		self.password = password
 
 @login_manager.user_loader
-def load_user(id):
-	user = 
-	if user:
-		return User(user[0],user[1],user[2])
+def load_user(email):
+	user = User.query.get(email==email)
+	return UserObject(user.id,
+				user.email,
+				user.password)
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
@@ -52,15 +48,11 @@ def login():
 		elif request.method == "POST":
 			email = request.form["email"]
 			password = request.form["password"]
-			conn = sqlite3.connect(dbPath)
-			c = conn.cursor()
-			c.execute("SELECT * FROM User WHERE email=?",[email])
-			user = c.fetchone()
-			conn.close()
-			if user:
-				access = bcrypt.checkpw(password.encode("utf8"),user[2])
+			user = load_user(email)
+			if user.email == email:
+				access = bcrypt.checkpw(password.encode("utf8"),user.password)
 				if access:
-					login_user(load_user(user[0]))
+					login_user(load_user(email))
 					return redirect("/index")
 			return render_template("auth/login.html",invalid=True)
 	else:
