@@ -66,29 +66,31 @@ def logout():
 
 @app.route("/register",methods=["GET","POST"])
 def register():
-	if request.method == "GET":
-		return render_template("auth/register.html")
-	elif request.method == "POST":
-		email = request.form["email"]
-		password = request.form["password"]
-		password_repeat = request.form["password_repeat"]
-		if password != password_repeat:
-			return render_template("auth/register.html",password_correct=False)
-		else:
-			hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
-			conn = sqlite3.connect(dbPath)
-			c = conn.cursor()
-			c.execute("INSERT INTO User(email,password) VALUES(?,?)",[email,hashed])
-			c.execute("SELECT * FROM User WHERE email=? and password=?",[email,hashed])
-			user = c.fetchone()
-			conn.commit()
-			conn.close()
-			if user:
-				login_user(load_user(user[0]))
-				return redirect("/index")
+	if not current_user.is_authenticated:
+		if request.method == "GET":
+			return render_template("auth/register.html")
+		elif request.method == "POST":
+			email = request.form["email"]
+			password = request.form["password"]
+			password_repeat = request.form["password_repeat"]
+			if password != password_repeat:
+				return render_template("auth/register.html",password_correct=False)
 			else:
-				return render_template("auth/register.html",error=True)
-
+				hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+				conn = sqlite3.connect(dbPath)
+				c = conn.cursor()
+				c.execute("INSERT INTO User(email,password) VALUES(?,?)",[email,hashed])
+				c.execute("SELECT * FROM User WHERE email=? and password=?",[email,hashed])
+				user = c.fetchone()
+				conn.commit()
+				conn.close()
+				if user:
+					login_user(load_user(user[0]))
+					return redirect("/index")
+				else:
+					return render_template("auth/register.html",error=True)
+	else:
+		return redirect("/index")
 @app.route("/index")
 @login_required
 def index():
