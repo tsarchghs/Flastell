@@ -2,9 +2,18 @@ from flask import Flask,render_template,redirect,request,url_for
 from flask_login import LoginManager, UserMixin, login_required,current_user,login_user,logout_user
 from collections import OrderedDict
 from models import db
+from models import User,Email
 import os
 import sqlite3 
 import bcrypt
+from sqlalchemy.orm import exc
+from werkzeug.exceptions import abort
+
+def get_object_or_404(model, *criterion):
+    try:
+        return model.query.filter(*criterion).one()
+    except exc.NoResultFound, exc.MultipleResultsFound:
+        abort(404)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////{}/db.sqlite3'.format(str(os.getcwd()))
@@ -23,12 +32,7 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(id):
-	conn = sqlite3.connect(dbPath)
-	c = conn.cursor()
-	c.execute("SELECT * FROM User WHERE id=(?)", [id])
-	user = c.fetchone()
-	conn.commit()
-	conn.close()
+	user = 
 	if user:
 		return User(user[0],user[1],user[2])
 
