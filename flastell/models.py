@@ -1,10 +1,6 @@
-from app import app
 from flask_sqlalchemy import SQLAlchemy
-import os
 
-open("db.sqlite3","w+").close()
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////{}/db.sqlite3.db'.format(str(os.getcwd()))
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 class User(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
