@@ -1,21 +1,17 @@
 from flask import Flask,render_template,redirect,request,url_for
-import database as db
 from flask_login import LoginManager, UserMixin, login_required,current_user,login_user,logout_user
+from collections import OrderedDict
+from models import db
+import os
 import sqlite3 
 import bcrypt
-from collections import OrderedDict
-
-dbPath = "db.sqlite3"
-conn = sqlite3.connect(dbPath)
-c = conn.cursor()
-c.execute("CREATE TABLE IF NOT EXISTS User({});".format(db.getUserSchema()))
-c.execute("CREATE TABLE IF NOT EXISTS Email({});".format(db.getEmailSchema()))
-conn.commit()
-conn.close()
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////{}/db.sqlite3'.format(str(os.getcwd()))
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
+with app.app_context():
+	db.init_app(app)
+	db.create_all()
 login_manager = LoginManager()
 login_manager.init_app(app)
 
