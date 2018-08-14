@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
-	username = db.Column(db.String)
+	email = db.Column(db.String,unique=True)
 	password = db.Column(db.String)
 	def __repr__(self):
 		return "<User {}>".format(username)
