@@ -115,12 +115,16 @@ def index():
 def showEmails(receiver_id):
 	#c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
 	#			AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])
-	emails = db.engine.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
-				AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])	
+	#emails = db.engine.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
+	#			AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])	
+	emails = Email.query.filter(Email.sender_id == current_user.id or
+								   Email.sender_id == receiver_id and
+								   Email.receiver_id == current_user.id or
+								   Email.receiver_id == receiver_id)
 	sender_email = OrderedDict()
 	for email in emails:
 		sender = load_user(email.sender_id)
-		sender_email[sender] = email
+		sender_email[email] = sender
 	receiver = load_user(int(receiver_id))
 	return render_template("emails/showEmails.html",emails=sender_email,receiver=receiver)
 
