@@ -113,15 +113,13 @@ def index():
 @app.route("/showEmails/<int:receiver_id>")
 @login_required
 def showEmails(receiver_id):
-	conn = sqlite3.connect(dbPath)
-	c = conn.cursor()
-	c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
-				AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])
-	emails = c.fetchall()
-	conn.close()
+	#c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
+	#			AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])
+	emails = db.engine.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
+				AND (receiver_id=? or receiver_id=?) ORDER BY -id""",[current_user.id,receiver_id,receiver_id,current_user.id])	
 	sender_email = OrderedDict()
 	for email in emails:
-		sender = load_user(email[1])
+		sender = load_user(email.sender_id)
 		sender_email[sender] = email
 	receiver = load_user(int(receiver_id))
 	return render_template("emails/showEmails.html",emails=sender_email,receiver=receiver)
@@ -135,7 +133,7 @@ def compose(type_):
 		conn = sqlite3.connect(dbPath)
 		c = conn.cursor()
 		receiver_email = request.form["receiver_email"]
-		c.execute("SELECT id FROM User WHERE email=?",[receiver_email])
+		c.execute("SELECT id FROM user WHERE email=?",[receiver_email])
 		try:
 			receiver_id = c.fetchone()[0]
 		except TypeError:
@@ -162,7 +160,7 @@ def editAccount():
 		email = request.form["email"]
 		conn = sqlite3.connect(dbPath)
 		c = conn.cursor()
-		c.execute("UPDATE User SET email=? WHERE email=?",(email,current_user.email,))
+		c.execute("UPDATE user SET email=? WHERE email=?",(email,current_user.email,))
 		conn.commit()
 		conn.close()
 		return render_template("accounts/editAccount.html",success=True)
