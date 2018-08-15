@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block body %}
 Emails between {{current_user.email}} and {{receiver.email}}:
-	<ul>
-	{% for key,value in emails.items() %}
-		<li>{{key.email}}, - {{value.3}} <br>
-				-{{value.4}}</li>
+	<ul>{{emails}}
+	{% for email,sender in emails.items() %}
+		<li>{{email.title}}, - {{sender.email}} <br>
+				-{{email.description}}</li>
 	{% else %}
 		<li>Nothing to show</li>
 	{% endfor %}
