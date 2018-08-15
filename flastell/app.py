@@ -66,6 +66,8 @@ def register():
 			email = request.form["email"]
 			password = request.form["password"]
 			password_repeat = request.form["password_repeat"]
+			if User.query.filter_by(email=email):
+				return render_template("auth/register.html",email_taken=True)
 			if password != password_repeat:
 				return render_template("auth/register.html",password_correct=False)
 			else:
