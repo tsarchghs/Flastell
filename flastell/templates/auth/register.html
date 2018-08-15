@@ -10,8 +10,8 @@
     {% if email_taken %}
       <p>Email is taken</p>
     {% endif %}
-    {% if password_correct %}
-      <p>Password are not the same</p>
+    {% if not passwords_match %}
+      <p>Passwords must match</p>
     {% endif %}
     {% if error %}
       <p>Something went wrong!</p>

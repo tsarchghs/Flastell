@@ -66,10 +66,10 @@ def register():
 			email = request.form["email"]
 			password = request.form["password"]
 			password_repeat = request.form["password_repeat"]
-			if User.query.filter_by(email=email):
+			if User.query.filter_by(email=email).all():
 				return render_template("auth/register.html",email_taken=True)
 			if password != password_repeat:
-				return render_template("auth/register.html",password_correct=False)
+				return render_template("auth/register.html",passwords_match=False)
 			else:
 				hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 				conn = sqlite3.connect(dbPath)
@@ -91,7 +91,7 @@ def register():
 def index():
 	#c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=?",[current_user.id,current_user.id])
 	user_emails = Email.query.filter(Email.sender_id == current_user.id or
-									    Email.receiver_id == current_user.id)
+									    Email.receiver_id == current_user.id).all()
 	emails = OrderedDict()
 	for email in user_emails:
 		#c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
@@ -99,9 +99,13 @@ def index():
 		emailsList = Email.query.filter(Email.sender_id == email.sender_id or
 										   Email.sender_id == email.receiver_id and
 										   Email.receiver_id == email.sender_id or
-										   Email.receiver_id == email.receiver_id)
+										   Email.receiver_id == email.receiver_id).order_by("-id")
 		lastEmail = emailsList[-1]
-		emails[lastEmail.id,lastEmail.sender_id,lastEmail.receiver_id] = lastEmail.title
+		try:
+			if emails[lastEmail.id,lastEmail.sender_id,lastEmail.receiver_id]:
+				pass
+		except KeyError:
+			emails[lastEmail.id,lastEmail.sender_id,lastEmail.receiver_id] = lastEmail.title
 	user_email = OrderedDict()
 	for email,title in emails.items():
 		print(email)
