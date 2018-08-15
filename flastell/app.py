@@ -159,11 +159,7 @@ def editAccount():
 		return render_template("accounts/editAccount.html")
 	elif request.method == "POST":
 		email = request.form["email"]
-		conn = sqlite3.connect(dbPath)
-		c = conn.cursor()
-		c.execute("UPDATE user SET email=? WHERE email=?",(email,current_user.email,))
-		conn.commit()
-		conn.close()
+		account = User.query.filter_by(id=current_user.id).update({User.email:email})
 		return render_template("accounts/editAccount.html",success=True)
 
 if __name__ == "__main__":
