@@ -6,8 +6,27 @@ class User(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
 	email = db.Column(db.String,unique=True)
 	password = db.Column(db.String)
+	registered_on = db.Column('registered_on' , db.DateTime)
+	def __init__(self,email,password):
+		self.email = email
+		self.password = password
+		self.registered_on = datetime.utcnow()
+
+
+	def is_authenticated(self):
+		return True
+
+	def is_active(self):
+		return True
+
+	def is_anonymous(self):
+		return False
+
+	def get_id(self):
+		return self.id
+
 	def __repr__(self):
-		return "<User {}>".format(username)
+		return '<User %r>' % (self.username)
 
 class Email(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
