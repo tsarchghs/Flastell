@@ -35,5 +35,5 @@ class Email(db.Model):
 	title = db.Column(db.String(500))
 	description = db.Column(db.String)
 	def __repr__(self):
-		return "<Email {}>".format(id)
+		return "<Email {}>".format(self.id)
 
