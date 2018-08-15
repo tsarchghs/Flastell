@@ -20,12 +20,6 @@ with app.app_context():
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-class UserObject(UserMixin):
-	def __init__(self,ID,email,password):
-		self.id = ID
-		self.email = email
-		self.password = password
-
 @login_manager.user_loader
 def load_user(ID):
 	return User.query.get(ID)
