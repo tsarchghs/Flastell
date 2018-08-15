@@ -1,2 +1,2 @@
 # Flastell
-Flastell is an open-source email service
+Flastell is an open-source messaging service.
