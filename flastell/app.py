@@ -7,6 +7,7 @@ import sqlite3
 import bcrypt
 from sqlalchemy.orm import exc
 from models import User, Email
+from forms import LoginForm
 
 dbPath = "db.sqlite3"
 
@@ -26,11 +27,8 @@ class UserObject(UserMixin):
 		self.password = password
 
 @login_manager.user_loader
-def load_user(email):
-	user = User.query.get(email==email)
-	return UserObject(user.id,
-				user.email,
-				user.password)
+def load_user(ID):
+	return User.query.get(ID)
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
@@ -42,19 +40,20 @@ def redirectToIndex():
 
 @app.route("/login",methods=["GET","POST"])
 def login():
+	form = LoginForm(request.form)
 	if not current_user.is_authenticated:
-		if request.method == "GET":
-			return render_template("auth/login.html")
-		elif request.method == "POST":
-			email = request.form["email"]
-			password = request.form["password"]
-			user = load_user(email)
-			if user.email == email:
-				access = bcrypt.checkpw(password.encode("utf8"),user.password)
+		if request.method == "POST" and form.validate():
+			user = User.query.filter_by(email=form.email.data).first()
+			if user:
+				access = bcrypt.checkpw(form.password.data.encode("utf8"),user.password)
 				if access:
-					login_user(load_user(email))
+					print('bals')
+					login_user(load_user(user.id))
 					return redirect("/index")
-			return render_template("auth/login.html",invalid=True)
+					print("5")
+
+			return render_template("auth/login.html",invalid_credentials=True,form=form)
+		return render_template("auth/login.html",invalid_credentials=False,form=form)
 	else:
 		return redirect("/index")
 
@@ -79,8 +78,8 @@ def register():
 				hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 				conn = sqlite3.connect(dbPath)
 				c = conn.cursor()
-				c.execute("INSERT INTO User(email,password) VALUES(?,?)",[email,hashed])
-				c.execute("SELECT * FROM User WHERE email=? and password=?",[email,hashed])
+				c.execute("INSERT INTO user(email,password) VALUES(?,?)",[email,hashed])
+				c.execute("SELECT * FROM user WHERE email=? and password=?",[email,hashed])
 				user = c.fetchone()
 				conn.commit()
 				conn.close()
@@ -173,4 +172,4 @@ def editAccount():
 		return render_template("accounts/editAccount.html",success=True)
 
 if __name__ == "__main__":
-	app.run(debug=True,port=8000)
+	app.run(debug=True,port=8080)
