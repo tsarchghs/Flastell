@@ -89,17 +89,19 @@ def register():
 @app.route("/index")
 @login_required
 def index():
-	conn = sqlite3.connect(dbPath)
-	c = conn.cursor()
-	c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=?",[current_user.id,current_user.id])
-	user_emails = c.fetchall()
+	#c.execute("SELECT * FROM Email WHERE sender_id=? OR receiver_id=?",[current_user.id,current_user.id])
+	user_emails = Email.query.filter(Email.sender_id == current_user.id or
+									    Email.receiver_id == current_user.id)
 	emails = OrderedDict()
 	for email in user_emails:
-		c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
-					 AND (receiver_id=? or receiver_id=?)""",[email[1],email[2],email[1],email[2]])
-		emailsList = c.fetchall()
+		#c.execute("""SELECT * FROM Email WHERE (sender_id=? OR sender_id=?)
+		#			 AND (receiver_id=? or receiver_id=?)""",[email[1],email[2],email[1],email[2]])
+		emailsList = Email.query.filter(Email.sender_id == email.sender_id or
+										   Email.sender_id == email.receiver_id and
+										   Email.receiver_id == email.sender_id or
+										   Email.receiver_id == email.receiver_id)
 		lastEmail = emailsList[-1]
-		emails[lastEmail[0],lastEmail[1],lastEmail[2]] = lastEmail[3]
+		emails[lastEmail.id,lastEmail.sender_id,lastEmail.receiver_id] = lastEmail.title
 	user_email = OrderedDict()
 	for email,title in emails.items():
 		print(email)
@@ -107,7 +109,6 @@ def index():
 		sender = load_user(email[1])
 		receiver = load_user(email[2])
 		user_email[id_,sender,receiver] = title
-	conn.close()
 	return render_template("index.html",emails=user_email)
 
 @app.route("/showEmails/<int:receiver_id>")
