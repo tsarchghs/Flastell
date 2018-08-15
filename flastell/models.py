@@ -26,7 +26,7 @@ class User(db.Model):
 		return self.id
 
 	def __repr__(self):
-		return '<User %r>' % (self.username)
+		return '<User %r>' % (self.email)
 
 class Email(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
