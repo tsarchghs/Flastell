@@ -5,7 +5,6 @@ from models import db
 import os
 import sqlite3 
 import bcrypt
-from sqlalchemy.orm import exc
 from models import User, Email
 from forms import LoginForm
 
