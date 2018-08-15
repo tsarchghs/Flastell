@@ -5,14 +5,17 @@
 {% block body %}
   <body class="text-center">
     <form class="form-signin" method="POST">
-		{% if password_correct %}
-			<p>Password are not the same</p>
-		{% endif %}
-		{% if error %}
-			<p>Something went wrong!</p>
-		{% endif %}
       <img class="mb-4" src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
       <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+    {% if email_taken %}
+      <p>Email is taken</p>
+    {% endif %}
+    {% if password_correct %}
+      <p>Password are not the same</p>
+    {% endif %}
+    {% if error %}
+      <p>Something went wrong!</p>
+    {% endif %}
       <label for="inputEmail" class="sr-only">Email address</label>
       <input name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
