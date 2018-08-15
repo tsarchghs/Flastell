@@ -134,26 +134,23 @@ def compose(type_):
 	if request.method == "GET" and type_ == "new":
 		return render_template("emails/compose.html")
 	elif request.method == "POST":
-		conn = sqlite3.connect(dbPath)
-		c = conn.cursor()
 		receiver_email = request.form["receiver_email"]
-		c.execute("SELECT id FROM user WHERE email=?",[receiver_email])
-		try:
-			receiver_id = c.fetchone()[0]
-		except TypeError:
+		receiver = User.query.filter_by(email=receiver_email).first()
+		if not receiver:
 			if type_ == "new":
 				return render_template("emails/compose.html",invalid_email=True)
 			elif type_ == "email":
 				return render_template("emails/showEmails.html",invalid_email=True)
-		print(receiver_email)
 		title = request.form["title"]
 		description = request.form["description"]
-		c.execute("""INSERT INTO Email(sender_id,receiver_id,title,description)
-							VALUES(?,?,?,?)""",(str(current_user.id),str(receiver_id),
-												title,description,))
-		conn.commit()
-		conn.close()
-		return redirect(url_for("showEmails",receiver_id=receiver_id))
+		email = Email(sender_id=current_user.id,
+					  receiver_id=receiver.id,
+					  title=title,
+					  description=description)
+		session = db.create_scoped_session()
+		session.add(email)
+		session.commit()
+		return redirect(url_for("showEmails",receiver_id=receiver.id))
 
 @app.route("/account/edit",methods=["GET","POST"])
 @login_required
